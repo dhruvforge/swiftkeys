@@ -1,59 +1,47 @@
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
 import { useTheme } from '../contexts/ThemeContext'
-import AuthModal from './auth/AuthModal'
 import Logo from './Logo'
 import styles from './Header.module.css'
 
 export default function Header() {
-  const { user, signOut } = useAuth()
   const { theme, setTheme, themes } = useTheme()
-  const [showAuth, setShowAuth] = useState(false)
   const [showThemes, setShowThemes] = useState(false)
 
   return (
-    <>
-      <header className={styles.header}>
-        <Link to="/" className={styles.logoLink}>
-          <Logo size={32} />
-          <span className={styles.logoText}>SwiftKeys</span>
-        </Link>
+    <header className={styles.header}>
+      <Link to="/" className={styles.logoLink}>
+        <Logo size={32} />
+        <span className={styles.logoText}>SwiftKeys</span>
+      </Link>
 
-        <nav className={styles.nav}>
-          <NavLink to="/focus" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`}>
-            focus
-          </NavLink>
+      <nav className={styles.nav}>
+        <NavLink to="/focus" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`}>
+          focus
+        </NavLink>
 
-          <NavLink to="/history" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`}>
-            history
-          </NavLink>
+        <NavLink to="/history" className={({ isActive }) => `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`}>
+          history
+        </NavLink>
 
-          <div className={styles.themePicker}>
-            <button className={styles.themeBtn} onClick={() => setShowThemes(v => !v)} title="themes">
-              <PaletteIcon />
-            </button>
-            {showThemes && (
-              <div className={styles.themeDropdown}>
-                {themes.map(t => (
-                  <button
-                    key={t}
-                    className={`${styles.themeOption} ${theme === t ? styles.themeOptionActive : ''}`}
-                    onClick={() => { setTheme(t); setShowThemes(false) }}
-                  >{t}</button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {user && (
-            <button className={styles.navLink} onClick={signOut}>logout</button>
+        <div className={styles.themePicker}>
+          <button className={styles.themeBtn} onClick={() => setShowThemes(v => !v)} title="themes">
+            <PaletteIcon />
+          </button>
+          {showThemes && (
+            <div className={styles.themeDropdown}>
+              {themes.map(t => (
+                <button
+                  key={t}
+                  className={`${styles.themeOption} ${theme === t ? styles.themeOptionActive : ''}`}
+                  onClick={() => { setTheme(t); setShowThemes(false) }}
+                >{t}</button>
+              ))}
+            </div>
           )}
-        </nav>
-      </header>
-
-      {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
-    </>
+        </div>
+      </nav>
+    </header>
   )
 }
 
