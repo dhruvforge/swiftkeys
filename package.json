@@ -1,0 +1,72 @@
+{
+  "name": "swiftkeys",
+  "productName": "SwiftKeys",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "vite --port 5174",
+    "build": "vite build",
+    "preview": "vite preview",
+    "electron:dev": "concurrently \"vite --port 5174\" \"wait-on http://localhost:5174 && electron .\"",
+    "electron:build": "vite build && electron-builder",
+    "electron:pack": "vite build && electron-packager . SwiftKeys --platform=win32 --arch=x64 --out=dist-electron --overwrite --icon=public/icon.ico --ignore=node_modules --ignore=dist-electron --ignore=scripts --ignore=src --ignore=.env"
+  },
+  "build": {
+    "appId": "com.swiftkeys.app",
+    "productName": "SwiftKeys",
+    "copyright": "Personal use",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "dir",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "public/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "public/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "public/icon.png"
+    }
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.106.2",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "react-router-dom": "^7.15.1",
+    "recharts": "^3.8.1"
+  },
+  "devDependencies": {
+    "@electron/packager": "^20.0.0",
+    "@eslint/js": "^10.0.1",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "concurrently": "^10.0.0",
+    "electron": "^42.3.0",
+    "electron-builder": "^26.8.1",
+    "eslint": "^10.3.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.6.0",
+    "sharp": "^0.34.5",
+    "vite": "^8.0.12",
+    "wait-on": "^9.0.10"
+  }
+}

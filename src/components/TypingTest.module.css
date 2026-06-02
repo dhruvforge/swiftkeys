@@ -1,0 +1,184 @@
+.container {
+  width: 100%;
+  max-width: 860px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  animation: containerIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes containerIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── Mode selector ── */
+.modeSelector {
+  display: flex;
+  align-items: center;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 0.45rem 0.9rem;
+  gap: 0.2rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  transition: box-shadow 0.2s;
+}
+.modeSelector:hover {
+  box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+}
+
+.modeGroup { display: flex; gap: 0.1rem; }
+
+.modeDivider {
+  width: 1px;
+  height: 1.1em;
+  background: var(--glass-border);
+  margin: 0 0.55rem;
+}
+
+.modeBtn {
+  padding: 0.28rem 0.65rem;
+  border-radius: 7px;
+  font-size: 0.83rem;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: color 0.15s, background 0.15s, transform 0.12s;
+}
+.modeBtn:hover {
+  color: var(--text);
+  background: var(--glass-bg-hover);
+  transform: scale(1.05);
+}
+.active {
+  color: var(--accent) !important;
+  text-shadow: 0 0 12px rgba(226,183,20,0.45);
+}
+
+/* ── Timer ── */
+.meta { height: 2.6rem; display: flex; align-items: center; }
+
+.timer {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  transition: color 0.35s, transform 0.2s;
+  letter-spacing: -0.02em;
+}
+.timerRunning {
+  color: var(--accent);
+  text-shadow: 0 0 20px rgba(226,183,20,0.3);
+}
+.timerLow {
+  animation: timerPulse 0.7s ease-in-out infinite;
+  color: var(--incorrect) !important;
+  text-shadow: 0 0 20px rgba(224,82,82,0.45);
+}
+@keyframes timerPulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.08); }
+}
+
+/* ── Words area ── */
+.wordsWrapper {
+  width: 100%;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 1.6rem 1.8rem;
+  box-shadow: var(--glass-shadow);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.wordsWrapper:focus-within {
+  border-color: rgba(226,183,20,0.18);
+  box-shadow: var(--glass-shadow), 0 0 0 1px rgba(226,183,20,0.08);
+}
+
+.wordsContainer {
+  position: relative;
+  max-height: 7.8em;
+  overflow: hidden;
+  line-height: 2.2em;
+  font-size: 1.35rem;
+  letter-spacing: 0.025em;
+  cursor: text;
+  user-select: none;
+}
+
+.word {
+  display: inline-block;
+  margin-right: 0.4em;
+  position: relative;
+}
+
+/* Character states */
+.char {
+  color: var(--text-secondary);
+  transition: color 0.1s;
+}
+.correct  { color: var(--correct); }
+.incorrect{ color: var(--incorrect); text-shadow: 0 0 8px rgba(224,82,82,0.4); }
+.untyped  { color: var(--text-secondary); }
+.wordDone .untyped { color: rgba(224,82,82,0.55); }
+
+/* ── Sliding cursor ── */
+.cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 1.55em;
+  background: var(--cursor);
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(226,183,20,0.7), 0 0 20px rgba(226,183,20,0.3);
+  /* Slide smoothly between positions */
+  transition:
+    left  0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    top   0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  pointer-events: none;
+  /* Blink when not moving */
+  animation: cursorBlink 1s step-start infinite;
+}
+.cursorActive {
+  animation-duration: 0.65s;
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* ── Input / hint ── */
+.hiddenInput {
+  position: fixed;
+  opacity: 0;
+  pointer-events: none;
+  left: -9999px;
+  top: 0;
+}
+
+.hint {
+  font-size: 0.73rem;
+  color: var(--text-secondary);
+  opacity: 0.38;
+  margin-top: 0.1rem;
+  letter-spacing: 0.03em;
+}
+
+.hint kbd {
+  display: inline-block;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-family: var(--font);
+  font-size: 0.73rem;
+}

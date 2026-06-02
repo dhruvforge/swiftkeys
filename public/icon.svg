@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <!-- Background -->
+  <rect width="256" height="256" rx="52" fill="#0e0d16"/>
+
+  <!-- Subtle border glow -->
+  <rect width="256" height="256" rx="52" fill="none" stroke="#e2b714" stroke-width="3" opacity="0.2"/>
+
+  <!-- Inner gradient overlay for depth -->
+  <defs>
+    <radialGradient id="glow" cx="35%" cy="30%" r="60%">
+      <stop offset="0%" stop-color="#2a1f00" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#0e0d16" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="256" height="256" rx="52" fill="url(#glow)"/>
+
+  <!-- ── Keyboard body ── -->
+  <rect x="28" y="116" width="200" height="108" rx="18"
+    fill="rgba(226,183,20,0.06)" stroke="#e2b714" stroke-width="5"/>
+
+  <!-- Key top highlight -->
+  <rect x="36" y="124" width="184" height="4" rx="2" fill="white" opacity="0.05"/>
+
+  <!-- Top row — 5 keys, decreasing brightness -->
+  <rect x="40"  y="130" width="30" height="22" rx="6" fill="#e2b714"/>
+  <rect x="77"  y="130" width="30" height="22" rx="6" fill="#e2b714" fill-opacity="0.65"/>
+  <rect x="114" y="130" width="30" height="22" rx="6" fill="#e2b714" fill-opacity="0.38"/>
+  <rect x="151" y="130" width="30" height="22" rx="6" fill="#e2b714" fill-opacity="0.2"/>
+  <rect x="188" y="130" width="40" height="22" rx="6" fill="#e2b714" fill-opacity="0.12"/>
+
+  <!-- Cursor glow on first key -->
+  <circle cx="55" cy="141" r="7" fill="white" fill-opacity="0.55"/>
+
+  <!-- Middle row — muted grey keys -->
+  <rect x="40"  y="160" width="38" height="22" rx="6" fill="#1e1d2e"/>
+  <rect x="85"  y="160" width="30" height="22" rx="6" fill="#1e1d2e"/>
+  <rect x="122" y="160" width="30" height="22" rx="6" fill="#1e1d2e"/>
+  <rect x="159" y="160" width="30" height="22" rx="6" fill="#1e1d2e"/>
+  <rect x="196" y="160" width="32" height="22" rx="6" fill="#1e1d2e"/>
+
+  <!-- Spacebar -->
+  <rect x="72" y="191" width="112" height="22" rx="6" fill="#e2b714" fill-opacity="0.38"/>
+
+  <!-- ── Lightning bolt — upper right ── -->
+  <path
+    d="M208 18 L188 68 H204 L184 110 L236 56 H220 Z"
+    fill="#e2b714"
+    stroke="#0e0d16"
+    stroke-width="3"
+    stroke-linejoin="round"
+  />
+
+  <!-- Lightning glow -->
+  <path
+    d="M208 18 L188 68 H204 L184 110 L236 56 H220 Z"
+    fill="none"
+    stroke="#e2b714"
+    stroke-width="6"
+    stroke-linejoin="round"
+    opacity="0.2"
+  />
+</svg>
