@@ -1,8 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
 import { useTypingTest } from '../hooks/useTypingTest'
 import { recordWord } from '../lib/adaptiveLearning'
-import { useAuth } from '../contexts/AuthContext'
-import { supabase } from '../lib/supabase'
 import { saveResult } from '../lib/localResults'
 import Results from './Results'
 import styles from './TypingTest.module.css'
@@ -19,7 +17,6 @@ export default function TypingTest({ customWords = null, onFinish }) {
   const wordsContainerRef = useRef(null)
   const cursorRef        = useRef(null)
   const isResettingRef   = useRef(false)
-  const { user } = useAuth()
 
   const test = useTypingTest({
     mode, modeValue, customWords,
@@ -98,16 +95,9 @@ export default function TypingTest({ customWords = null, onFinish }) {
       mode_value: customWords ? customWords.length : modeValue,
     }
 
-    // Always save locally
     saveResult(result)
-
-    // Also save to Supabase if logged in
-    if (user) {
-      supabase?.from('results').insert({ user_id: user.id, ...result })
-    }
-
     onFinish?.(stats)
-  }, [finished, stats, user, mode, modeValue, resultSaved, customWords, onFinish])
+  }, [finished, stats, mode, modeValue, resultSaved, customWords, onFinish])
 
   function doReset() {
     isResettingRef.current = true
@@ -207,7 +197,7 @@ export default function TypingTest({ customWords = null, onFinish }) {
         <Results
           stats={stats}
           wpmHistory={wpmHistory}
-          saved={!!user}
+          saved={true}
           onRestart={doReset}
         />
       )}
