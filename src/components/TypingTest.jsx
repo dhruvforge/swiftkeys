@@ -3,6 +3,7 @@ import { useTypingTest } from '../hooks/useTypingTest'
 import { recordWord } from '../lib/adaptiveLearning'
 import { saveResult } from '../lib/localResults'
 import Results from './Results'
+import MiniKeyboard from './MiniKeyboard'
 import styles from './TypingTest.module.css'
 
 const TIME_MODES  = [15, 30, 60, 120]
@@ -192,6 +193,7 @@ export default function TypingTest({ customWords = null, onFinish }) {
             autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false}
           />
           <p className={styles.hint}>press <kbd>Tab</kbd> to restart</p>
+          <MiniKeyboard />
         </>
       ) : (
         <Results

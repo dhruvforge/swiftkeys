@@ -1,0 +1,55 @@
+.keyboard {
+  position: fixed;
+  bottom: 0.9rem;
+  right: 0.9rem;
+  z-index: 50;
+  width: clamp(190px, 21vw, 250px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.4rem;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  box-shadow: var(--glass-shadow);
+  opacity: 0.55;
+  transition: opacity 0.25s;
+  user-select: none;
+  pointer-events: none;
+}
+.keyboard:hover { opacity: 0.9; }
+
+.row {
+  display: flex;
+  gap: 0.2rem;
+}
+
+.key {
+  flex-basis: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.15rem;
+  border-radius: 4px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  font-family: var(--font);
+  font-size: 0.5rem;
+  line-height: 1;
+  transition: background 0.08s, color 0.08s, transform 0.08s, box-shadow 0.08s;
+}
+
+.active {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+  transform: translateY(1px) scale(0.96);
+  box-shadow: 0 0 12px var(--accent);
+}
+
+@media (max-width: 640px) {
+  .keyboard { display: none; }
+}
