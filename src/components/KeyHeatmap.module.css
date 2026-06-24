@@ -1,0 +1,64 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.keyboard {
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.row {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.key {
+  flex-basis: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2rem;
+  border-radius: 6px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  font-family: var(--font);
+  font-size: 0.72rem;
+  line-height: 1;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.empty {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.worst {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  align-items: center;
+}
+
+.worstKey {
+  color: var(--text);
+  background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+  border-radius: 5px;
+  padding: 0.1rem 0.45rem;
+}
+
+.worstKey em {
+  font-style: normal;
+  color: var(--incorrect);
+  margin-left: 0.2rem;
+}

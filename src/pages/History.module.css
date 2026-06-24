@@ -74,6 +74,74 @@
 .summaryValue { font-size: 1.55rem; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
 .accent       { color: var(--accent) !important; text-shadow: 0 0 20px rgba(226,183,20,0.3); }
 
+/* Goal */
+.goalBar {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  padding: 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  animation: cardIn 0.45s 0.12s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.goalHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.goalLabel { font-size: 0.82rem; color: var(--text-secondary); letter-spacing: 0.03em; }
+
+.goalInputWrap { display: flex; align-items: baseline; gap: 0.35rem; }
+
+.goalInput {
+  width: 4rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+  border-radius: 7px;
+  padding: 0.3rem 0.5rem;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.95rem;
+  text-align: right;
+  transition: border-color 0.15s;
+}
+.goalInput:focus { outline: none; border-color: var(--accent); }
+.goalUnit { font-size: 0.75rem; color: var(--text-secondary); }
+
+.goalTrack {
+  position: relative;
+  height: 1.4rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.goalFill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 8px;
+  opacity: 0.75;
+  transition: width 0.5s cubic-bezier(0.16,1,0.3,1);
+}
+.goalFillDone { box-shadow: var(--glow-accent); opacity: 0.9; }
+
+.goalText {
+  position: absolute;
+  top: 0;
+  right: 0.6rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  font-size: 0.74rem;
+  color: var(--text);
+}
+
 /* Table */
 .tableWrapper {
   background: var(--glass-bg);

@@ -1,7 +1,9 @@
 import { useState, useMemo } from 'react'
 import { getWeakWords, getTotalStats, generateAdaptiveList, clearStats } from '../lib/adaptiveLearning'
+import { clearKeyStats } from '../lib/keyStats'
 import { commonWords } from '../data/words'
 import TypingTest from '../components/TypingTest'
+import KeyHeatmap from '../components/KeyHeatmap'
 import styles from './Focus.module.css'
 
 export default function Focus() {
@@ -77,7 +79,12 @@ export default function Focus() {
             )}
           </div>
 
-          <button className={styles.clearBtn} onClick={() => { clearStats(); setLastResult(null) }}>
+          <div className={styles.section}>
+            <h2 className={styles.sectionTitle}>key accuracy</h2>
+            <KeyHeatmap />
+          </div>
+
+          <button className={styles.clearBtn} onClick={() => { clearStats(); clearKeyStats(); setLastResult(null) }}>
             reset learning data
           </button>
         </>

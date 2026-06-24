@@ -1,14 +1,23 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { getResults, clearResults } from '../lib/localResults'
+import { computeStreak } from '../lib/streak'
+import { getGoal, setGoal } from '../lib/goals'
 import styles from './History.module.css'
 
 export default function History() {
   const [results, setResults] = useState([])
+  const [goal, setGoalState] = useState(getGoal())
 
   useEffect(() => {
     setResults(getResults())
   }, [])
+
+  function handleGoal(e) {
+    const v = e.target.value ? Number(e.target.value) : null
+    setGoal(v)
+    setGoalState(v)
+  }
 
   function handleClear() {
     if (window.confirm('Clear all history? This cannot be undone.')) {
@@ -30,6 +39,9 @@ export default function History() {
   const best = results.reduce((b, r) => r.wpm > (b?.wpm || 0) ? r : b, null)
   const avgWpm = Math.round(results.reduce((s, r) => s + r.wpm, 0) / results.length)
   const avgAcc = Math.round(results.reduce((s, r) => s + r.accuracy, 0) / results.length)
+  const streak = computeStreak(results)
+  const goalPct = goal ? Math.min(100, Math.round((best.wpm / goal) * 100)) : 0
+  const goalReached = goal && best.wpm >= goal
 
   return (
     <div className={styles.page}>
@@ -42,7 +54,34 @@ export default function History() {
         <SummaryStat label="best wpm" value={best?.wpm} accent />
         <SummaryStat label="avg wpm" value={avgWpm} />
         <SummaryStat label="avg accuracy" value={`${avgAcc}%`} />
+        <SummaryStat label="day streak" value={streak.current} />
         <SummaryStat label="tests" value={results.length} />
+      </div>
+
+      <div className={styles.goalBar}>
+        <div className={styles.goalHead}>
+          <label className={styles.goalLabel} htmlFor="goal">
+            goal{goalReached ? ' — reached! 🎉' : ''}
+          </label>
+          <span className={styles.goalInputWrap}>
+            <input
+              id="goal" type="number" min="1" max="400"
+              className={styles.goalInput}
+              value={goal ?? ''} placeholder="—"
+              onChange={handleGoal}
+            />
+            <span className={styles.goalUnit}>wpm</span>
+          </span>
+        </div>
+        {goal > 0 && (
+          <div className={styles.goalTrack}>
+            <div
+              className={`${styles.goalFill} ${goalReached ? styles.goalFillDone : ''}`}
+              style={{ width: `${goalPct}%` }}
+            />
+            <span className={styles.goalText}>{best.wpm} / {goal}</span>
+          </div>
+        )}
       </div>
 
       <div className={styles.tableWrapper}>

@@ -6,6 +6,24 @@
   gap: 1.6rem;
 }
 
+/* ── New best badge ── */
+.bestBadge {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+  text-shadow: var(--glow-accent);
+  animation: bestIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both, bestPulse 1.6s ease-in-out 0.5s infinite;
+}
+@keyframes bestIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes bestPulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.65; }
+}
+
 /* ── Stats row ── */
 .stats {
   display: flex;

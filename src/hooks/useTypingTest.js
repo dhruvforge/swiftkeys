@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { generateWords } from '../data/words'
 
-export function useTypingTest({ mode, modeValue, customWords = null, onWordComplete }) {
+export function useTypingTest({ mode, modeValue, punctuation = false, customWords = null, onWordComplete }) {
   const [words, setWords] = useState([])
   const [typed, setTyped] = useState('')
   const [wordIndex, setWordIndex] = useState(0)
@@ -24,7 +24,7 @@ export function useTypingTest({ mode, modeValue, customWords = null, onWordCompl
       newWords = customWords
     } else {
       const count = mode === 'time' ? 200 : modeValue
-      newWords = generateWords(count)
+      newWords = generateWords(count, { punctuation })
     }
 
     setWords(newWords)
@@ -41,7 +41,7 @@ export function useTypingTest({ mode, modeValue, customWords = null, onWordCompl
     clearInterval(timerRef.current)
     startTimeRef.current = null
     wordStartTimeRef.current = null
-  }, [mode, modeValue, customWords])
+  }, [mode, modeValue, punctuation, customWords])
 
   useEffect(() => { reset() }, [reset])
 
@@ -103,7 +103,7 @@ export function useTypingTest({ mode, modeValue, customWords = null, onWordCompl
       const isCorrect = submittedWord === word
       const timeMs = wordStartTimeRef.current ? Date.now() - wordStartTimeRef.current : 500
 
-      onWordComplete?.(word, isCorrect, timeMs)
+      onWordComplete?.(word, isCorrect, timeMs, submittedWord)
 
       const newCompleted = [...completedWordsRef.current, { word, typed: submittedWord }]
       completedWordsRef.current = newCompleted

@@ -1,9 +1,11 @@
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 import styles from './Results.module.css'
 
-export default function Results({ stats, wpmHistory, onRestart, saved }) {
+export default function Results({ stats, wpmHistory, onRestart, saved, isBest }) {
   return (
     <div className={styles.results}>
+      {isBest && <p className={styles.bestBadge}>★ new personal best</p>}
+
       <div className={styles.stats}>
         <Stat label="wpm" value={stats.wpm} accent />
         <Stat label="accuracy" value={`${stats.accuracy}%`} />

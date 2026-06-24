@@ -35,10 +35,31 @@ export const commonWords = [
   "common","kind","cross","catch","sentence","mountain","wish","drop","single","plan"
 ]
 
-export function generateWords(count = 60) {
+const pick = arr => arr[Math.floor(Math.random() * arr.length)]
+
+// Wrap/prefix a word with symbols so brackets, quotes, @, # get drilled.
+const WRAPPERS = [
+  w => `(${w})`, w => `[${w}]`, w => `{${w}}`, w => `<${w}>`,
+  w => `"${w}"`, w => `'${w}'`, w => `@${w}`, w => `#${w}`,
+]
+const TRAILERS = [',', '.', ';', ':', '!', '?']
+
+// Sprinkle punctuation/symbols onto a plain word. Roughly half of words
+// get something, so commas, brackets and @ show up often.
+function punctuate(word) {
+  const r = Math.random()
+  if (r < 0.20) word = pick(WRAPPERS)(word)
+  else if (r < 0.50) word = word + pick(TRAILERS)
+  if (Math.random() < 0.18) word = word[0].toUpperCase() + word.slice(1)
+  return word
+}
+
+export function generateWords(count = 60, { punctuation = false } = {}) {
   const words = []
   for (let i = 0; i < count; i++) {
-    words.push(commonWords[Math.floor(Math.random() * commonWords.length)])
+    let w = pick(commonWords)
+    if (punctuation) w = punctuate(w)
+    words.push(w)
   }
   return words
 }

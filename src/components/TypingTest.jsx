@@ -1,7 +1,9 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
 import { useTypingTest } from '../hooks/useTypingTest'
 import { recordWord } from '../lib/adaptiveLearning'
-import { saveResult } from '../lib/localResults'
+import { recordKeys } from '../lib/keyStats'
+import { saveResult, getResults } from '../lib/localResults'
+import { bestWpmFor } from '../lib/goals'
 import Results from './Results'
 import MiniKeyboard from './MiniKeyboard'
 import styles from './TypingTest.module.css'
@@ -12,7 +14,9 @@ const WORD_MODES  = [10, 25, 50, 100]
 export default function TypingTest({ customWords = null, onFinish }) {
   const [mode, setMode]           = useState('time')
   const [modeValue, setModeValue] = useState(30)
+  const [punctuation, setPunctuation] = useState(false)
   const [resultSaved, setResultSaved] = useState(false)
+  const [isBest, setIsBest]       = useState(false)
 
   const inputRef         = useRef(null)
   const wordsContainerRef = useRef(null)
@@ -20,8 +24,11 @@ export default function TypingTest({ customWords = null, onFinish }) {
   const isResettingRef   = useRef(false)
 
   const test = useTypingTest({
-    mode, modeValue, customWords,
-    onWordComplete: recordWord,
+    mode, modeValue, punctuation, customWords,
+    onWordComplete: (word, correct, timeMs, typed) => {
+      recordWord(word, correct, timeMs)
+      recordKeys(word, typed)
+    },
   })
   const { words, typed, wordIndex, charStatuses, started, finished,
           timeLeft, wpmHistory, stats, handleInput, reset } = test
@@ -89,11 +96,16 @@ export default function TypingTest({ customWords = null, onFinish }) {
     if (!finished || !stats || resultSaved) return
     setResultSaved(true)
 
+    const resMode = customWords ? 'focus' : mode
+    const resVal = customWords ? customWords.length : modeValue
+
+    const prevBest = bestWpmFor(getResults(), resMode, resVal)
+    setIsBest(prevBest > 0 && stats.wpm > prevBest)
+
     const result = {
       wpm: stats.wpm, raw_wpm: stats.raw,
       accuracy: stats.accuracy, consistency: stats.consistency,
-      mode: customWords ? 'focus' : mode,
-      mode_value: customWords ? customWords.length : modeValue,
+      mode: resMode, mode_value: resVal,
     }
 
     saveResult(result)
@@ -103,11 +115,16 @@ export default function TypingTest({ customWords = null, onFinish }) {
   function doReset() {
     isResettingRef.current = true
     setResultSaved(false)
+    setIsBest(false)
     reset()
   }
 
   function handleModeChange(m, v) {
-    setMode(m); setModeValue(v); setResultSaved(false)
+    setMode(m); setModeValue(v); setResultSaved(false); setIsBest(false)
+  }
+
+  function togglePunctuation() {
+    setPunctuation(p => !p); setResultSaved(false); setIsBest(false)
   }
 
   function handleKeyDown(e) {
@@ -141,6 +158,11 @@ export default function TypingTest({ customWords = null, onFinish }) {
                 onClick={() => handleModeChange('words', v)}>{v}</button>
             ))}
           </div>
+          <div className={styles.modeDivider} />
+          <button
+            className={`${styles.modeBtn} ${punctuation ? styles.active : ''}`}
+            onClick={togglePunctuation}
+            title="punctuation & symbols">@#</button>
         </div>
       )}
 
@@ -200,6 +222,7 @@ export default function TypingTest({ customWords = null, onFinish }) {
           stats={stats}
           wpmHistory={wpmHistory}
           saved={true}
+          isBest={isBest}
           onRestart={doReset}
         />
       )}
