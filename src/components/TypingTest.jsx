@@ -1,9 +1,10 @@
-import { useRef, useEffect, useState, useCallback } from 'react'
+import { useRef, useEffect, useState, useMemo, useCallback } from 'react'
 import { useTypingTest } from '../hooks/useTypingTest'
 import { recordWord } from '../lib/adaptiveLearning'
 import { recordKeys } from '../lib/keyStats'
 import { saveResult, getResults } from '../lib/localResults'
 import { bestWpmFor } from '../lib/goals'
+import { randomQuote, GENRES } from '../data/quotes'
 import Results from './Results'
 import MiniKeyboard from './MiniKeyboard'
 import styles from './TypingTest.module.css'
@@ -15,6 +16,10 @@ export default function TypingTest({ customWords = null, onFinish }) {
   const [mode, setMode]           = useState('time')
   const [modeValue, setModeValue] = useState(30)
   const [punctuation, setPunctuation] = useState(false)
+  const [quote, setQuote]         = useState(null)
+  const [quoteGenre, setQuoteGenre] = useState('all')
+  const [customText, setCustomText] = useState('')
+  const [customDraft, setCustomDraft] = useState('')
   const [resultSaved, setResultSaved] = useState(false)
   const [isBest, setIsBest]       = useState(false)
 
@@ -23,8 +28,19 @@ export default function TypingTest({ customWords = null, onFinish }) {
   const cursorRef        = useRef(null)
   const isResettingRef   = useRef(false)
 
+  // Quote/custom modes feed a fixed word list through the same engine that
+  // Focus mode uses (customWords). The prop wins so Focus still works.
+  const internalCustomWords = useMemo(() => {
+    if (mode === 'quote')  return quote ? quote.text.split(' ') : null
+    if (mode === 'custom') return customText ? customText.trim().split(/\s+/) : null
+    return null
+  }, [mode, quote, customText])
+
+  const activeWords = customWords ?? internalCustomWords
+  const isCustomList = !!activeWords
+
   const test = useTypingTest({
-    mode, modeValue, punctuation, customWords,
+    mode, modeValue, punctuation, customWords: activeWords,
     onWordComplete: (word, correct, timeMs, typed) => {
       recordWord(word, correct, timeMs)
       recordKeys(word, typed)
@@ -97,7 +113,7 @@ export default function TypingTest({ customWords = null, onFinish }) {
     setResultSaved(true)
 
     const resMode = customWords ? 'focus' : mode
-    const resVal = customWords ? customWords.length : modeValue
+    const resVal = activeWords ? activeWords.length : modeValue
 
     const prevBest = bestWpmFor(getResults(), resMode, resVal)
     setIsBest(prevBest > 0 && stats.wpm > prevBest)
@@ -110,13 +126,14 @@ export default function TypingTest({ customWords = null, onFinish }) {
 
     saveResult(result)
     onFinish?.(stats)
-  }, [finished, stats, mode, modeValue, resultSaved, customWords, onFinish])
+  }, [finished, stats, mode, modeValue, resultSaved, customWords, activeWords, onFinish])
 
   function doReset() {
     isResettingRef.current = true
     setResultSaved(false)
     setIsBest(false)
-    reset()
+    if (mode === 'quote') setQuote(q => randomQuote(q, quoteGenre))   // fresh quote → engine resets
+    else reset()
   }
 
   function handleModeChange(m, v) {
@@ -127,12 +144,34 @@ export default function TypingTest({ customWords = null, onFinish }) {
     setPunctuation(p => !p); setResultSaved(false); setIsBest(false)
   }
 
+  function selectQuote() {
+    setMode('quote'); setQuote(randomQuote(null, quoteGenre)); setResultSaved(false); setIsBest(false)
+  }
+
+  function selectGenre(g) {
+    setQuoteGenre(g); setQuote(randomQuote(null, g)); setResultSaved(false); setIsBest(false)
+  }
+
+  function selectCustom() {
+    setMode('custom'); setResultSaved(false); setIsBest(false)
+  }
+
+  function startCustom() {
+    const t = customDraft.trim()
+    if (!t) return
+    setCustomText(t); setResultSaved(false); setIsBest(false)
+  }
+
+  function editCustom() {
+    setCustomText(''); setResultSaved(false); setIsBest(false)
+  }
+
   function handleKeyDown(e) {
     if (e.key === 'Tab') { e.preventDefault(); doReset() }
     if (e.key === ' ' && typed === '') e.preventDefault()
   }
 
-  const displayCount = customWords
+  const displayCount = isCustomList
     ? words.length
     : mode === 'time' ? Math.min(words.length, 80) : modeValue
 
@@ -163,68 +202,115 @@ export default function TypingTest({ customWords = null, onFinish }) {
             className={`${styles.modeBtn} ${punctuation ? styles.active : ''}`}
             onClick={togglePunctuation}
             title="punctuation & symbols">@#</button>
+          <div className={styles.modeDivider} />
+          <div className={styles.modeGroup}>
+            <button
+              className={`${styles.modeBtn} ${mode === 'quote' ? styles.active : ''}`}
+              onClick={selectQuote}>quote</button>
+            <button
+              className={`${styles.modeBtn} ${mode === 'custom' ? styles.active : ''}`}
+              onClick={selectCustom}>custom</button>
+          </div>
         </div>
       )}
 
-      <div className={styles.meta}>
-        {!finished && mode === 'time' && !customWords && (
-          <span className={`${styles.timer} ${started ? styles.timerRunning : ''} ${timerLow ? styles.timerLow : ''}`}>
-            {started ? timeLeft : modeValue}
-          </span>
-        )}
-        {!finished && (mode === 'words' || customWords) && (
-          <span className={styles.timer}>{wordIndex}/{customWords ? customWords.length : modeValue}</span>
-        )}
-      </div>
+      {!customWords && mode === 'quote' && (
+        <div className={styles.genreBar}>
+          <button
+            className={`${styles.genreChip} ${quoteGenre === 'all' ? styles.genreChipActive : ''}`}
+            onClick={() => selectGenre('all')}>all</button>
+          {GENRES.map(g => (
+            <button key={g}
+              className={`${styles.genreChip} ${quoteGenre === g ? styles.genreChipActive : ''}`}
+              onClick={() => selectGenre(g)}>{g}</button>
+          ))}
+        </div>
+      )}
 
-      {!finished ? (
+      {mode === 'custom' && !customText ? (
+        <div className={styles.customPanel}>
+          <textarea
+            className={styles.customTextarea}
+            value={customDraft}
+            onChange={e => setCustomDraft(e.target.value)}
+            placeholder="Paste or type any text you want to practice…"
+            rows={5}
+            autoFocus
+          />
+          <button className={styles.customStartBtn} onClick={startCustom} disabled={!customDraft.trim()}>
+            start typing
+          </button>
+        </div>
+      ) : (
         <>
-          <div className={styles.wordsWrapper}>
-            <div
-              className={styles.wordsContainer}
-              ref={wordsContainerRef}
-              onClick={() => inputRef.current?.focus()}
-            >
-              {words.slice(0, displayCount).map((word, wi) => (
-                <span
-                  key={wi}
-                  data-active={wi === wordIndex ? 'true' : undefined}
-                  className={`${styles.word} ${wi < wordIndex ? styles.wordDone : ''}`}
-                >
-                  {word.split('').map((ch, ci) => (
-                    <span
-                      key={ci}
-                      data-ch
-                      className={`${styles.char} ${styles[charStatuses[wi]?.[ci] || 'untyped']}`}
-                    >{ch}</span>
-                  ))}
-                </span>
-              ))}
-
-              {/* Single animated cursor */}
-              <span ref={cursorRef} className={`${styles.cursor} ${started ? styles.cursorActive : ''}`} />
-            </div>
+          <div className={styles.meta}>
+            {!finished && mode === 'time' && !isCustomList && (
+              <span className={`${styles.timer} ${started ? styles.timerRunning : ''} ${timerLow ? styles.timerLow : ''}`}>
+                {started ? timeLeft : modeValue}
+              </span>
+            )}
+            {!finished && (mode === 'words' || isCustomList) && (
+              <span className={styles.timer}>{wordIndex}/{activeWords ? activeWords.length : modeValue}</span>
+            )}
           </div>
 
-          <input
-            ref={inputRef}
-            className={styles.hiddenInput}
-            value={typed}
-            onChange={e => handleInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false}
-          />
-          <p className={styles.hint}>press <kbd>Tab</kbd> to restart</p>
-          <MiniKeyboard />
+          {!finished ? (
+            <>
+              <div className={styles.wordsWrapper}>
+                <div
+                  className={styles.wordsContainer}
+                  ref={wordsContainerRef}
+                  onClick={() => inputRef.current?.focus()}
+                >
+                  {words.slice(0, displayCount).map((word, wi) => (
+                    <span
+                      key={wi}
+                      data-active={wi === wordIndex ? 'true' : undefined}
+                      className={`${styles.word} ${wi < wordIndex ? styles.wordDone : ''}`}
+                    >
+                      {word.split('').map((ch, ci) => (
+                        <span
+                          key={ci}
+                          data-ch
+                          className={`${styles.char} ${styles[charStatuses[wi]?.[ci] || 'untyped']}`}
+                        >{ch}</span>
+                      ))}
+                    </span>
+                  ))}
+
+                  {/* Single animated cursor */}
+                  <span ref={cursorRef} className={`${styles.cursor} ${started ? styles.cursorActive : ''}`} />
+                </div>
+              </div>
+
+              {mode === 'quote' && quote && (
+                <p className={styles.author}>— {quote.author}</p>
+              )}
+
+              <input
+                ref={inputRef}
+                className={styles.hiddenInput}
+                value={typed}
+                onChange={e => handleInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false}
+              />
+              <p className={styles.hint}>press <kbd>Tab</kbd> to restart</p>
+              {mode === 'custom' && (
+                <button className={styles.editTextBtn} onClick={editCustom}>edit text</button>
+              )}
+              <MiniKeyboard />
+            </>
+          ) : (
+            <Results
+              stats={stats}
+              wpmHistory={wpmHistory}
+              saved={true}
+              isBest={isBest}
+              onRestart={doReset}
+            />
+          )}
         </>
-      ) : (
-        <Results
-          stats={stats}
-          wpmHistory={wpmHistory}
-          saved={true}
-          isBest={isBest}
-          onRestart={doReset}
-        />
       )}
     </div>
   )

@@ -182,3 +182,100 @@
   font-family: var(--font);
   font-size: 0.73rem;
 }
+
+/* ── Genre filter ── */
+.genreBar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem;
+  max-width: 620px;
+  margin-top: -0.3rem;
+}
+
+.genreChip {
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: color 0.12s, background 0.12s, border-color 0.12s;
+}
+.genreChip:hover { color: var(--text); background: var(--glass-bg-hover); }
+.genreChipActive { color: var(--accent); border-color: var(--accent); }
+
+/* ── Quote author ── */
+.author {
+  align-self: flex-end;
+  margin-top: -0.3rem;
+  font-size: 0.95rem;
+  font-style: italic;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+}
+
+/* ── Custom text panel ── */
+.customPanel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.customTextarea {
+  width: 100%;
+  min-height: 9rem;
+  resize: vertical;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 1.2rem 1.4rem;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  box-shadow: var(--glass-shadow);
+  transition: border-color 0.2s;
+}
+.customTextarea:focus { outline: none; border-color: rgba(226,183,20,0.3); }
+.customTextarea::placeholder { color: var(--text-secondary); opacity: 0.6; }
+
+.customStartBtn {
+  padding: 0.6rem 1.6rem;
+  border-radius: 10px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  color: var(--accent);
+  font-size: 0.95rem;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.2s, opacity 0.15s;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+.customStartBtn:hover:not(:disabled) {
+  background: var(--glass-bg-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3), var(--glow-accent);
+}
+.customStartBtn:disabled { opacity: 0.4; cursor: default; }
+
+.editTextBtn {
+  font-size: 0.73rem;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+  text-decoration: underline;
+  opacity: 0.55;
+  transition: opacity 0.15s, color 0.15s;
+}
+.editTextBtn:hover { opacity: 1; color: var(--text); }

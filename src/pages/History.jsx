@@ -101,6 +101,8 @@ export default function History() {
                 <td className={styles.dim}>
                   {r.mode === 'time' ? `${r.mode_value}s`
                   : r.mode === 'focus' ? `focus (${r.mode_value}w)`
+                  : r.mode === 'quote' ? 'quote'
+                  : r.mode === 'custom' ? 'custom'
                   : `${r.mode_value} words`}
                 </td>
                 <td className={styles.dim}>{new Date(r.created_at).toLocaleDateString()}</td>
